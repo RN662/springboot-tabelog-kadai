@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+	<div th:replace="~{fragment :: meta}"></div>
+
+	<div th:replace="~{fragment :: styles}"></div>
+
+	<title>NAGOYAMESHI</title>
+</head>
+
+<body>
+	<div class="nagoyameshi-wrapper">
+		<!-- ヘッダー -->
+		<div th:replace="~{fragment :: header}"></div>
+
+		<main>
+			<div id="topCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-pause="false"
+				data-bs-interval="7000">
+				<div class="carousel-inner">
+					<div class="carousel-item active">
+						<img src="/storage/shop03.jpg" class="d-block w-100 top-img" alt="名古屋の味1">
+						<div class="top-overlay"></div>
+						<div class="carousel-caption top-caption">
+							<h1 class="display-6 fw-bold">名古屋ならではの味を、見つけよう</h1>
+							<p class="lead mb-0">NAGOYAMESHIは、名古屋市のB級グルメ専門のレビューサイトです。</p>
+						</div>
+					</div>
+
+					<div class="carousel-item">
+						<img src="/storage/shop26.jpg" class="d-block w-100 top-img" alt="名古屋の味2">
+						<div class="top-overlay"></div>
+						<div class="carousel-caption top-caption">
+							<h1 class="display-6 fw-bold">名古屋ならではの味を、見つけよう</h1>
+							<p class="lead mb-0">NAGOYAMESHIは、名古屋市のB級グルメ専門のレビューサイトです。</p>
+						</div>
+					</div>
+
+					<div class="carousel-item">
+						<img src="/storage/shop36.jpg" class="d-block w-100 top-img" alt="名古屋の味3">
+						<div class="top-overlay"></div>
+						<div class="carousel-caption top-caption">
+							<h1 class="display-6 fw-bold">名古屋ならではの味を、見つけよう</h1>
+							<p class="lead mb-0">NAGOYAMESHIは、名古屋市のB級グルメ専門のレビューサイトです。</p>
+						</div>
+					</div>
+
+					<div class="carousel-item">
+						<img src="/storage/shop08.jpg" class="d-block w-100 top-img" alt="名古屋の味4">
+						<div class="top-overlay"></div>
+						<div class="carousel-caption top-caption">
+							<h1 class="display-6 fw-bold">名古屋ならではの味を、見つけよう</h1>
+							<p class="lead mb-0">NAGOYAMESHIは、名古屋市のB級グルメ専門のレビューサイトです。</p>
+						</div>
+					</div>
+
+					<div class="carousel-item">
+						<img src="/storage/shop44.jpg" class="d-block w-100 top-img" alt="名古屋の味5">
+						<div class="top-overlay"></div>
+						<div class="carousel-caption top-caption">
+							<h1 class="display-6 fw-bold">名古屋ならではの味を、見つけよう</h1>
+							<p class="lead mb-0">NAGOYAMESHIは、名古屋市のB級グルメ専門のレビューサイトです。</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="container pt-4 pb-5 nagoyameshi-container">
+				<div th:if="${param.loggedIn}" class="alert alert-info">
+					ログインしました。
+				</div>
+
+				<div th:if="${param.loggedOut}" class="alert alert-info">
+					ログアウトしました。
+				</div>
+
+				<div th:if="${successMessage}" class="alert alert-info">
+					<span th:text="${successMessage}"></span>
+				</div>
+
+				<h2 class="mb-3">キーワードから探す</h2>
+				<div class="d-flex text-start">
+					<form method="get" th:action="@{/shops}" class="mb-5 nagoyameshi-search-form">
+						<div class="input-group">
+							<input type="text" class="form-control" name="keyword" th:value="${keyword}"
+								placeholder="店舗名・エリア・カテゴリ">
+							<button type="submit" class="btn text-white shadow-sm nagoyameshi-btn">検索</button>
+						</div>
+					</form>
+				</div>
+
+				<h2 class="mb-3">評価が高いお店</h2>
+				<div class="row row-cols-xxl-6 row-cols-lg-3 row-cols-2 g-3 mb-5">
+					<div class="col" th:each="topRatedShop : ${topRatedShops}">
+						<a th:href="@{/shops/__${topRatedShop.getId()}__}" class="link-dark nagoyameshi-card-link">
+							<div class="card h-100">
+								<img th:if="${topRatedShop.getImageName()}"
+									th:src="@{/storage/__${topRatedShop.getImageName()}__}"
+									class="card-img-top nagoyameshi-vertical-card-image" alt="店舗画像">
+								<img th:unless="${topRatedShop.getImageName()}" th:src="@{/images/noImage.png}"
+									class="card-img-top nagoyameshi-vertical-card-image" alt="NO IMAGE">
+
+								<div class="card-body">
+									<h3 class="card-title" th:text="${topRatedShop.getName()}"></h3>
+									<p class="card-text mb-1">
+										<small class="text-muted"
+											th:text="${topRatedShop.getCategory().getCategoryName()}"></small>
+									</p>
+
+									<div class="star-rating mb-2 text-start"
+										th:with="averageScore=${topRatedAverageScores[topRatedShop.id]}">
+										<span th:each="i : ${#numbers.sequence(1, 5)}">
+											<span th:if="${i <= averageScore}" class="star star-filled">&#9733;</span>
+											<span th:if="${i > averageScore and i - 0.5 <= averageScore}"
+												class="star star-half">&#9733;</span>
+											<span th:if="${i - 0.5 > averageScore}"
+												class="star star-empty">&#9734;</span>
+										</span>
+
+										<span class="ms-2"
+											th:text="${#numbers.formatDecimal(averageScore, 1, 2)}">0.00</span>
+
+									</div>
+								</div>
+
+							</div>
+						</a>
+					</div>
+				</div>
+
+				<h2 class="mb-3">カテゴリから探す</h2>
+				<div class="row row-cols-xxl-6 row-cols-lg-3 row-cols-2 g-3 mb-4">
+					<div class="col">
+						<a th:href="@{/shops(categoryName='和食')}" class="link-dark nagoyameshi-card-link">
+							<div class="card text-bg-dark nagoyameshi-category-card h-100">
+								<img src="/storage/shop01.jpg" class="card-img nagoyameshi-category-image" alt="和食">
+								<div class="card-img-overlay nagoyameshi-category-overlay">
+									<h5 class="nagoyameshi-category-title">和食</h5>
+								</div>
+							</div>
+						</a>
+					</div>
+
+					<div class="col">
+						<a th:href="@{/shops(categoryName='丼物')}" class="link-dark nagoyameshi-card-link">
+							<div class="card text-bg-dark  nagoyameshi-category-card h-100">
+								<img src="/storage/shop35.jpg" class="card-img nagoyameshi-category-image" alt="丼物">
+								<div class="card-img-overlay nagoyameshi-category-overlay">
+									<h5 class="nagoyameshi-category-title">丼物</h5>
+								</div>
+							</div>
+						</a>
+					</div>
+
+					<div class="col">
+						<a th:href="@{/shops(categoryName='ラーメン')}" class="link-dark nagoyameshi-card-link">
+							<div class="card text-bg-dark nagoyameshi-category-card h-100">
+								<img src="/storage/shop36.jpg" class="card-img nagoyameshi-category-image" alt="ラーメン">
+								<div class="card-img-overlay nagoyameshi-category-overlay">
+									<h5 class="nagoyameshi-category-title">ラーメン</h5>
+								</div>
+							</div>
+						</a>
+					</div>
+
+					<div class="col">
+						<a th:href="@{/shops(categoryName='居酒屋')}" class="link-dark nagoyameshi-card-link">
+							<div class="card text-bg-dark nagoyameshi-category-card h-100">
+								<img src="/storage/shop07.jpg" class="card-img nagoyameshi-category-image" alt="居酒屋">
+								<div class="card-img-overlay nagoyameshi-category-overlay">
+									<h5 class="nagoyameshi-category-title">居酒屋</h5>
+								</div>
+							</div>
+						</a>
+					</div>
+
+					<div class="col">
+						<a th:href="@{/shops(categoryName='焼肉')}" class="link-dark nagoyameshi-card-link">
+							<div class="card text-bg-dark nagoyameshi-category-card h-100">
+								<img src="/storage/shop39.jpg" class="card-img nagoyameshi-category-image" alt="焼肉">
+								<div class="card-img-overlay nagoyameshi-category-overlay">
+									<h5 class="nagoyameshi-category-title">焼肉</h5>
+								</div>
+							</div>
+						</a>
+					</div>
+
+					<div class="col">
+						<a th:href="@{/shops(categoryName='うどん')}" class="link-dark nagoyameshi-card-link">
+							<div class="card text-bg-dark nagoyameshi-category-card h-100">
+								<img src="/storage/shop02.jpg" class="card-img nagoyameshi-category-image" alt="うどん">
+								<div class="card-img-overlay nagoyameshi-category-overlay">
+									<h5 class="nagoyameshi-category-title">うどん</h5>
+								</div>
+							</div>
+						</a>
+					</div>
+				</div>
+				
+				<div class="text-start mb-5">
+					<th:block th:each="category : ${categories}">
+						<a th:if="${category.categoryName != '和食' and category.categoryName != '丼物' and category.categoryName != 'ラーメン' and category.categoryName != '居酒屋' and category.categoryName != '焼肉' and category.categoryName != 'うどん'}"
+							th:href="@{/shops(categoryName=${category.categoryName})}" class="btn btn-outline-secondary btn-sm me-2 mb-2"
+							th:text="${category.categoryName}">
+						</a>
+					</th:block>
+				</div>
+
+
+				<h2 class="mb-3">新規掲載店</h2>
+				<div class="row row-cols-xxl-6 row-cols-lg-3 row-cols-2 g-3 mb-5">
+					<div class="col" th:each="newShop : ${newShops}">
+						<a th:href="@{/shops/__${newShop.getId()}__}" class="link-dark nagoyameshi-card-link">
+							<div class="card h-100">
+								<img th:if="${newShop.getImageName()}"
+									th:src="@{/storage/__${newShop.getImageName()}__}"
+									class="card-img-top nagoyameshi-vertical-card-image" alt="店舗画像">
+								<img th:unless="${newShop.getImageName()}" th:src="@{/images/noImage.png}"
+									class="card-img-top nagoyameshi-vertical-card-image" alt="NO IMAGE">
+
+								<div class="card-body">
+									<h3 class="card-title" th:text="${newShop.getName()}"></h3>
+									<p class="card-text mb-1">
+										<small class="text-muted"
+											th:text="${newShop.getCategory().getCategoryName()}"></small>
+									</p>
+									<p class="card-text">
+										<span th:text="${newShop.getDescription()}"></span>
+									</p>
+								</div>
+							</div>
+						</a>
+					</div>
+				</div>
+
+			</div>
+		</main>
+
+		<!-- フッター -->
+		<div th:replace="~{fragment :: footer}"></div>
+	</div>
+
+	<div th:replace="~{fragment :: scripts}"></div>
+
+</body>
+
+</html>

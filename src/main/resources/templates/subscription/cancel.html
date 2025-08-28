@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	<head>
+		<div th:replace="~{fragment :: meta}"></div>
+		
+		<div th:replace="~{fragment :: styles}"></div>
+		
+		<title>有料プラン解約</title>
+	</head>
+	
+	<body>
+		<div class="nagoyameshi-wrapper">
+			<!-- ヘッダー -->
+			<div th:replace="~{fragment :: header}"></div>
+			
+			<main>
+				<div class="container pt-4 pb-5 nagoyameshi-container">
+					<div class="row justify-content-center">
+						<div class="col-xl-4 col-lg-5 col-md-7 col-sm-9">
+							<nav class="mb-4" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+								<ol class="breadcrumb mb-0">
+									<li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+									<li class="breadcrumb-item active" aria-current="page">有料プラン解約</li>
+								</ol>
+							</nav>
+							
+							<h1 class="mb-4 text-center">有料プラン解約</h1>
+							
+							<div th:if="${errorMessage}" class="alert alert-danger">
+								<span th:text="${errorMessage}"></span>
+							</div>
+							
+						    <p class="mb-4 lead text-center">本当に有料プランを解約しますか？</p>
+					
+								<div class="feature-list text-center">
+									<h3>【有料プランの内容】</h3>
+									<ul class="list-unstyled">
+										<li>前日までならいつでも予約可能</li>
+										<li>店舗をお気に入りに追加可能</li>
+										<li>レビューを投稿可能</li>
+									</ul>
+								
+								    <div th:if="${user.isPaid and successMessage == null}" class="mt-4 d-flex justify-content-center">
+										<form th:action="@{/subscription/cancel}" method="post" class="w-100">
+											<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+									        <button type="submit" id="cancel-subscription-button" class="btn text-white shadow-sm w-50 btn-danger">解約</button>
+									    </form>
+								    </div>
+								
+								</div>
+							
+						</div>
+					</div>
+				</div>
+			</main>
+			
+			<!-- フッター -->
+			<div th:replace="~{fragment :: footer}"></div>
+			
+		</div>
+		
+		<!-- Bootstrap -->
+		<div th:replace="~{fragment :: scripts}"></div>
+		  
+		<script th:src="@{/js/cancel.js}"></script>
+		
+	</body>
+	
+</html>

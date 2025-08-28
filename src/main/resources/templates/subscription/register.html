@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	<head>
+		<div th:replace="~{fragment :: meta}"></div>
+		
+		<div th:replace="~{fragment :: styles}"></div>
+		
+		<title>有料プラン登録</title>
+	</head>
+	
+	<body>
+		<div class="nagoyameshi-wrapper">
+			<!-- ヘッダー -->
+			<div th:replace="~{fragment :: header}"></div>
+			
+			<main>
+				<div class="container pt-4 pb-5 nagoyameshi-container">
+					<div class="row justify-content-center">
+						<div class="col-xl-4 col-lg-5 col-md-7 col-sm-9">
+							<nav class="mb-4" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+								<ol class="breadcrumb mb-0">
+									<li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+									<li class="breadcrumb-item active" aria-current="page">有料プラン登録</li>
+								</ol>
+							</nav>
+							
+							<h1 class="mb-4 text-center">有料プラン登録</h1>
+							
+						    <div th:if="${errorMessage}" class="alert alert-danger">
+								<span th:text="${errorMessage}"></span>
+							</div>
+							
+							<p class="mb-4 lead text-center">月額 ¥300で以下の特典を得ることができます</p>
+					
+								<div class="feature-list text-center">
+									<h3>【有料プランの内容】</h3>
+									<ul class="list-unstyled">
+										<li>前日までならいつでも予約可能</li>
+										<li>店舗をお気に入りに追加可能</li>
+										<li>レビューを投稿可能</li>
+									</ul>
+								
+								    <div th:if="${sessionId}" class="mt-4 d-flex justify-content-center">
+									    <button id="subscription-button" class="btn text-white shadow-sm w-50 nagoyameshi-btn">登録</button>
+								    </div>
+								
+								</div>
+							
+						</div>
+					</div>
+				</div>
+			</main>
+			
+			<!-- フッター -->
+			<div th:replace="~{fragment :: footer}"></div>
+			
+		</div>
+		
+		<!-- Bootstrap -->
+		<div th:replace="~{fragment :: scripts}"></div>
+		
+		<script src="https://js.stripe.com/v3"></script>
+		
+		<script th:if="${sessionId}" th:inline="javascript">
+            window.stripePublicKey = /*[[${stripePublicKey}]]*/ "";
+            window.sessionId       = /*[[${sessionId}]]*/ "";
+        </script> 
+          
+		<script th:if="${sessionId}" th:src="@{/js/stripe.js}"></script>
+		
+	</body>
+	
+</html>

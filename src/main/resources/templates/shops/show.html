@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	<head>
+		<div th:replace="~{fragment :: meta}"></div> 
+		
+		<div th:replace="~{fragment :: styles}"></div>
+		
+	    <!-- Flatpickr -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+		
+		<title>店舗詳細</title>
+	</head>
+	
+	<body>
+		<div class="nagoyameshi-wrapper">
+			<!-- ヘッダー -->
+			<div th:replace="~{fragment :: header}"></div>
+			
+			<main>
+				<div class="container pt-4 pb-5 nagoyameshi-container">
+					<div class="row justify-content-center">
+						<div class="col-xxl-7 col-xl-8 col-lg-9">
+							<div class="d-flex justify-content-between mb-4">
+							    <nav class="mb-4" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+								    <ol class="breadcrumb mb-0">
+									    <li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+									    <li class="breadcrumb-item"><a th:href="@{/shops}">店舗一覧</a></li>
+									    <li class="breadcrumb-item active" aria-current="page">店舗詳細</li>
+								    </ol>
+							    </nav>
+							    
+							    <!-- お気に入りセクション -->
+							    <div sec:authorize="isAuthenticated()" th:if="${currentUser.isPaid}">
+									<div th:if="${isFavorite}">
+										<a href="#" onclick="event.preventDefault(); document.getElementById('favorite-form').submit();">&#9829; お気に入り解除</a>
+										<form method="post" th:action="@{/shops/__${shop.getId()}__/favorites/delete}" id="favorite-form" class="d-none"></form>
+									</div>
+									<div  th:unless="${isFavorite}">
+										<a href="#" onclick="event.preventDefault(); document.getElementById('favorite-form').submit();">&#9825; お気に入り追加</a>
+										<form method="post" th:action="@{/shops/__${shop.getId()}__/favorites/create}" id="favorite-form" class="d-none"></form>
+									</div>
+								</div>
+							</div>
+							
+							<h1 class="mb-2 text-center" th:text="${shop.getName()}"></h1>
+							
+							<!-- 評価の★ -->
+							<div class="star-rating mb-4 justify-content-center">
+								<span th:each="i : ${#numbers.sequence(1, 5)}">
+									<span th:if="${i <= averageScore}" class="star star-filled">&#9733;</span>
+									<span th:if="${i > averageScore and i - 0.5 <= averageScore}" class="star star-half">&#9733;</span>
+									<span th:if="${i - 0.5 > averageScore}" class="star star-empty">&#9734;</span>
+								</span>
+								
+								<span class="ms-2">
+									<span th:text="${#numbers.formatDecimal(averageScore, 1, 2)}">0.00</span>
+									<a th:href="@{/shops/__${shop.id}__/reviews}" class="review-count-link">
+									(<span th:text="${totalReviewCount}">0</span>件)
+									</a>
+								</span>
+							</div>
+							
+							<!-- リダイレクトメッセージ -->
+							<div th:if="${successMessage}" class="alert alert-info">
+								<span th:text="${successMessage}"></span>
+							</div>
+							
+							<div th:if="${errorMessage}" class="alert alert-danger">
+								<span th:text="${errorMessage}"></span>
+							</div>
+							
+							<div class="mb-4">
+								<img th:if="${shop.getImageName()}" th:src="@{/storage/__${shop.getImageName()}__}" class="w-100" alt="店舗画像">
+								<img th:unless="${shop.getImageName()}" th:src="@{/images/noImage.png}" class="w-100" alt="NO IMAGE">
+							</div>
+							
+							<div class="container">
+								<div class="row">
+									<div class="col-lg-8 container mb-4">
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-3">
+												<span class="fw-bold">店舗名</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getName()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-3">
+												<span class="fw-bold">カテゴリ</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getCategory().getCategoryName()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-3">
+												<span class="fw-bold">説明</span>
+											</div>
+											
+											<div class="col">
+												<span class="nagoyameshi-pre-wrap" th:text="${shop.getDescription()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-3">
+												<span class="fw-bold">価格帯</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${#numbers.formatInteger(shop.getLowestPrice(), 1, 'COMMA') + '円～' + #numbers.formatInteger(shop.getHighestPrice(), 1, 'COMMA') + '円'}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-3">
+												<span class="fw-bold">営業時間</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getOpeningTime() + '～' + shop.getClosingTime()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-3">
+												<span class="fw-bold">定休日</span>
+											</div>
+											
+											<div class="col">
+										        <div th:if="${holiday != null and (holiday.monday or holiday.tuesday or holiday.wednesday or holiday.thursday or holiday.friday or holiday.saturday or holiday.sunday)}">
+											        <span th:if="${holiday.monday}">月 </span>
+											        <span th:if="${holiday.tuesday}">火 </span>
+											        <span th:if="${holiday.wednesday}">水 </span>
+											        <span th:if="${holiday.thursday}">木 </span>
+											        <span th:if="${holiday.friday}">金 </span>
+											        <span th:if="${holiday.saturday}">土 </span>
+											        <span th:if="${holiday.sunday}">日 </span>
+										        </div>
+										
+										        <span th:unless="${holiday != null and (holiday.monday or holiday.tuesday or holiday.wednesday or holiday.thursday or holiday.friday or holiday.saturday or holiday.sunday)}">なし</span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-3">
+												<span class="fw-bold">郵便番号</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getPostalCode()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-3">
+												<span class="fw-bold">住所</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getAddress()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-3">
+												<span class="fw-bold">電話番号</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getPhoneNumber()}"></span>
+											</div>
+										</div>
+										
+										<div class="row pb-2 mb-2 border-bottom">
+											<div class="col-3">
+												<span class="fw-bold">座席数</span>
+											</div>
+											
+											<div class="col">
+												<span th:text="${shop.getSeatingCapacity() + '席'}"></span>
+											</div>
+										</div>
+									</div>
+									
+									<!-- 予約フォーム -->	
+									<div sec:authorize="isAnonymous()" class="col-lg-4 px-0 ps-lg-4 mb-4">
+										<div class="card">
+											<div class="card-body">
+												<p class="card-text">予約するには<a th:href="@{/login}">ログイン</a>後、有料プラン登録が必要です。</p>
+												<button type="submit" class="btn text-white shadow-sm w-100 nagoyameshi-btn" disabled>予約する</button>
+											</div>
+										</div>
+									</div>
+									
+									<div sec:authorize="isAuthenticated()" th:if="${!currentUser.isPaid}" class="col-lg-4 px-0 ps-lg-4 mb-4">
+										<div class="card">
+											<div class="card-body">
+												<p class="card-text">予約するには<a th:href="@{/subscription/register}">有料プラン登録</a>が必要です。</p>
+												<button type="submit" class="btn text-white shadow-sm w-100 nagoyameshi-btn" disabled>予約する</button>
+											</div>
+										</div>
+									</div>
+									
+									<div sec:authorize="isAuthenticated()" th:if="${currentUser.isPaid}" class="col-lg-4 px-0 ps-lg-4 mb-4">
+										<div class="card">
+											<div class="card-body">
+												<form method="get" th:action="@{/shops/__${shop.getId()}__/reservations/input}" th:object="${reservationInputForm}">
+													<div class="form-group mb-2">
+														<label for="reservationDate" class="col-form-label text-md-left fw-bold">予約日</label>
+														<div th:if="${#fields.hasErrors('reservationDate')}" class="text-danger small mb-2" th:errors="*{reservationDate}"></div>
+														<input type="text" id="reservationDate" class="form-control" th:field="*{reservationDate}" placeholder="予約日を選択してください">
+													</div>
+													
+													<div class="form-group mb-2">
+														<label for="reservationTime" class="col-form-label text-md-left fw-bold">時間</label>
+														<div th:if="${#fields.hasErrors('reservationTime')}" class="text-danger small mb-2" th:errors="*{reservationTime}"></div>
+														<select id="reservationTime" class="form-control" th:field="*{reservationTime}">
+																<option value="">時間を選択してください</option>
+																<option th:each="time : ${timeSlots}" th:value="${time}" th:text="${time}"></option>
+														</select>
+													</div>
+													
+													<div class="form-group mb-4">
+														<label for="numberOfPeople" class="col-form-label text-md-left fw-bold">人数</label>
+														<div th:if="${#fields.hasErrors('numberOfPeople')}" class="text-danger small mb-2" th:errors="*{numberOfPeople}"></div>
+														<select id="numberOfPeople" class="form-control" th:field="*{numberOfPeople}">
+															<option value="">人数を選択してください</option>
+															<th:block th:each="i : ${#numbers.sequence(1, shop.seatingCapacity)}">
+																<option th:value="${i}" th:text="${i} + '名'"></option>
+															</th:block>
+														</select>
+														
+													</div>
+													
+													<div class="form-group">
+														<button type="submit" class="btn text-white shadow-sm w-100 nagoyameshi-btn">予約する</button>
+													</div>
+												</form>
+												
+											</div>
+										</div>
+									</div>
+										
+								</div>
+							</div>
+							
+							<!-- レビューセクション -->
+							<div class="container px-0">
+								<h2 class="mb-4 text-center">レビュー</h2>
+								<div sec:authorize="isAuthenticated()" th:if="${currentUser.isPaid}" th:unless="${hasUserAlreadyReviewed}" class="row justify-content-center mb-4">
+									<div class="col-lg-4">
+										<a th:href="@{/shops/__${shop.getId()}__/reviews/register}" class="btn text-white shadow-sm w-100 nagoyameshi-btn">レビューを投稿する</a>
+									</div>
+								</div>
+								<div th:if="${#lists.isEmpty(newReviews)}" class="mb-4">
+									<p class="text-center">まだレビューがありません。</p>
+								</div>
+								<div th:unless="${#lists.isEmpty(newReviews)}" class="row row-cols-1 row-cols-md-2 g-4 mb-4">
+									<div th:each="review : ${newReviews}">
+										<div class="col">
+											<div class="card">
+												<div class="card-body">
+													<div class="d-flex justify-content-between">
+														<h5 class="card-title" th:text="${review.getUser().getName()}"></h5>
+														<span sec:authorize="isAuthenticated()" th:if="${#authentication.principal.user.id == review.getUser().getId()}">
+															<a th:href="@{/shops/__${shop.getId()}__/reviews/__${review.getId()}__/edit}" class="me-2">編集</a>
+															<a href="#" class="nagoyameshi-link-danger" data-bs-toggle="modal" th:data-bs-target="${'#deleteReviewModal' + review.getId()}">削除</a>
+															
+															<!-- 削除用モーダル -->
+															<div class="modal fade" th:id="${'deleteReviewModal' + review.getId()}" tabindex="-1" th:aria-labelledby="${'deleteReviewModalLabel' + review.getId()}">
+																<div class="modal-dialog">
+																	<div class="modal-content">
+																		<div  class="modal-header">
+																			<h5 class="modal-title" th:id="${'deleteReviewModalLabel' + review.getId()}" th:text="${shop.getName() + 'のレビューを削除してもよろしいですか？'}"></h5>
+																			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+																		</div>
+																		<div class="modal-footer">
+																			<form method="post"th:action="@{/shops/__${shop.getId()}__/reviews/__${review.getId()}__/delete}">
+																				<button type="submit" class="btn nagoyameshi-btn-danger text-white shadow-sm">削除</button>
+																			</form>
+																		</div>
+																	</div>
+																</div>
+															</div>
+														</span>
+													</div>
+													
+													<p class="card-text mb-1">
+														<span class="nagoyameshi-star" th:each="star : ${#numbers.sequence(1, 5)}" th:text="${star <= review.getScore()} ? '&#9733;' : '&#9734;'"></span>
+													</p>
+													<p class="card-text">
+														<small class="text-muted" th:text="${#dates.format(review.getCreatedAt(), 'yyyy年MM月dd日')}"></small>
+													</p>
+													<p class="card-text" th:text="${review.getContent()}"></p>
+													
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								
+								<div class="text-center mb-4" th:if="${totalReviewCount > 6}">
+									<a th:href="@{/shops/__${shop.getId()}__/reviews}">すべてのレビューを見る</a>
+								</div>
+								
+							</div>
+						</div>
+					</div>
+				</div>
+			</main>
+			
+			<!-- フッター -->
+			<div th:replace="~{fragment :: footer}"></div>
+		</div>
+		
+		<div th:replace="~{fragment :: scripts}"></div>
+		
+		<!-- 定休日データの埋め込み -->	
+		<script th:inline="javascript">const holidays = /*[[${holidays}]]*/ [];</script>
+				
+		<!-- Flatpickr -->
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+        <script th:src="@{/js/flatpickr.js}"></script> 
+		
+	</body>
+</html>

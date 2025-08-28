@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	<head>
+		<div th:replace="~{fragment :: meta}"></div> 
+		
+		<div th:replace="~{fragment :: styles}"></div>
+		
+		<title>会社概要</title>
+	</head>
+	
+	<body>
+		<div class="nagoyameshi-wrapper">
+			<!-- ヘッダー -->
+			<div th:replace="~{fragment :: header}"></div>
+			
+			<main>
+				<div class="container pt-4 pb-5 nagoyameshi-container">
+					<div class="row justify-content-center">
+						<div class="col-xl-5 col-lg-6 col-md-8">
+							<nav class="mb-4" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+								<ol class="breadcrumb mb-0">
+									<li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+									<li class="breadcrumb-item active" aria-current="page">会社概要</li>
+								</ol>
+							</nav>
+							
+							<h1 class="mb-4 text-center">会社概要</h1>
+							
+							<div class="container mb-4">
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-3">
+										<span class="fw-bold">会社名</span>
+									</div>
+									
+									<div class="col">
+										<span>NAGOYAMESHI株式会社</span>
+									</div>	
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-3">
+										<span class="fw-bold">所在地</span>
+									</div>
+									
+									<div class="col">
+										<span>〒101-0022 東京都千代田区神田練塀町300番地 住友不動産秋葉原駅前ビル5F</span>
+									</div>	
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-3">
+										<span class="fw-bold">代表者</span>
+									</div>
+									
+									<div class="col">
+										<span>侍 太郎</span>
+									</div>	
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-3">
+										<span class="fw-bold">設立</span>
+									</div>
+									
+									<div class="col">
+										<span>2011年1月11日</span>
+									</div>	
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-3">
+										<span class="fw-bold">資本金</span>
+									</div>
+									
+									<div class="col">
+										<span>110,000千円</span>
+									</div>	
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-3">
+										<span class="fw-bold">事業内容</span>
+									</div>
+									
+									<div class="col">
+										<span>飲食店等の情報提供サービス</span>
+									</div>	
+								</div>
+								
+								<div class="row pb-2 mb-2 border-bottom">
+									<div class="col-3">
+										<span class="fw-bold">従業員数</span>
+									</div>
+									
+									<div class="col">
+										<span>95名</span>
+									</div>	
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</main>
+			
+			<!-- フッター -->
+			<div th:replace="~{fragment :: footer}"></div>
+		</div>
+		
+		<div th:replace="~{fragment :: scripts}"></div>
+		
+	</body>
+</html>
