@@ -84,7 +84,7 @@ public class ShopService {
 			String hashedImageName = generateNewFileName(imageName);
 			Path filePath = Paths.get("src/main/resources/static/storage/" + hashedImageName);
 			copyImageFile(imageFile, filePath);
-			shop.setImageName(hashedImageName);
+			shop.setImageName("/storage/" + hashedImageName);
 			}
 		}
 
@@ -137,7 +137,7 @@ public class ShopService {
 			String hashedImageName = generateNewFileName(imageName);
 			Path filePath = Paths.get("src/main/resources/static/storage/" + hashedImageName);
 			copyImageFile(imageFile, filePath);
-			shop.setImageName(hashedImageName);
+			shop.setImageName("/storage/" + hashedImageName);
 			}
 		}
 
