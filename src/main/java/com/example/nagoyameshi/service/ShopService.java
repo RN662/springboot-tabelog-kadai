@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.util.UUID;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,13 +32,16 @@ public class ShopService {
 	private final ReservationRepository reservationRepository;
 	private final FavoriteRepository favoriteRepository;
 	private final ReviewRepository reviewRepository;
+	private final ObjectProvider<CloudinaryService> cloudinaryService;
 
-	public ShopService(ShopRepository shopRepository, ShopHolidayRepository shopHolidayRepository, ReservationRepository reservationRepository, FavoriteRepository favoriteRepository, ReviewRepository reviewRepository) {
+	public ShopService(ShopRepository shopRepository, ShopHolidayRepository shopHolidayRepository, ReservationRepository reservationRepository, 
+			FavoriteRepository favoriteRepository, ReviewRepository reviewRepository, ObjectProvider<CloudinaryService> cloudinaryService) {
 		this.shopRepository = shopRepository;
 		this.shopHolidayRepository = shopHolidayRepository;
 		this.reservationRepository = reservationRepository;
 		this.favoriteRepository = favoriteRepository;
 		this.reviewRepository = reviewRepository;
+		this.cloudinaryService = cloudinaryService;
 	}
 	
 	// コントローラから移動
@@ -64,11 +68,24 @@ public class ShopService {
 		MultipartFile imageFile = shopRegisterForm.getImageFile();
 
 		if (!imageFile.isEmpty()) {
+			CloudinaryService cloud = cloudinaryService.getIfAvailable();
+			
+			if (cloud != null) {
+				try {
+					String url = cloud.upload(imageFile);
+					shop.setImageName(url);
+					
+				} catch (IOException e) {
+					throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "画像アップロードに失敗しました", e);
+				}
+				
+			} else {
 			String imageName = imageFile.getOriginalFilename();
 			String hashedImageName = generateNewFileName(imageName);
 			Path filePath = Paths.get("src/main/resources/static/storage/" + hashedImageName);
 			copyImageFile(imageFile, filePath);
 			shop.setImageName(hashedImageName);
+			}
 		}
 
 		shop.setCategory(category);
@@ -105,11 +122,23 @@ public class ShopService {
 		MultipartFile imageFile = shopEditForm.getImageFile();
 
 		if (!imageFile.isEmpty()) {
+			CloudinaryService cloud = cloudinaryService.getIfAvailable();
+			
+			if (cloud != null) {
+				try {
+					String url = cloud.upload(imageFile);
+					shop.setImageName(url);
+					
+				} catch (IOException  e) {
+					throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "画像アップロードに失敗しました", e);
+				}
+			} else {
 			String imageName = imageFile.getOriginalFilename();
 			String hashedImageName = generateNewFileName(imageName);
 			Path filePath = Paths.get("src/main/resources/static/storage/" + hashedImageName);
 			copyImageFile(imageFile, filePath);
 			shop.setImageName(hashedImageName);
+			}
 		}
 
 		shop.setCategory(category);
