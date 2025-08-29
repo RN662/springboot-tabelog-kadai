@@ -96,7 +96,7 @@
 						<a th:href="@{/shops/__${topRatedShop.getId()}__}" class="link-dark nagoyameshi-card-link">
 							<div class="card h-100">
 								<img th:if="${topRatedShop.getImageName()}"
-									th:src="@{/storage/__${topRatedShop.getImageName()}__}"
+									th:src="${topRatedShop.getImageName()}"
 									class="card-img-top nagoyameshi-vertical-card-image" alt="店舗画像">
 								<img th:unless="${topRatedShop.getImageName()}" th:src="@{/images/noImage.png}"
 									class="card-img-top nagoyameshi-vertical-card-image" alt="NO IMAGE">
@@ -214,7 +214,7 @@
 						<a th:href="@{/shops/__${newShop.getId()}__}" class="link-dark nagoyameshi-card-link">
 							<div class="card h-100">
 								<img th:if="${newShop.getImageName()}"
-									th:src="@{/storage/__${newShop.getImageName()}__}"
+									th:src="${newShop.getImageName()}"
 									class="card-img-top nagoyameshi-vertical-card-image" alt="店舗画像">
 								<img th:unless="${newShop.getImageName()}" th:src="@{/images/noImage.png}"
 									class="card-img-top nagoyameshi-vertical-card-image" alt="NO IMAGE">

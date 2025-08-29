@@ -31,7 +31,7 @@
 									<div class="card h-100">
 										<div class="row g-0">
 											<div class="col-md-3">
-												<img th:if="${favorite.getShop().getImageName()}" th:src="@{/storage/__${favorite.getShop().getImageName()}__}" class="card-img-top nagoyameshi-favorite-card-image" alt="店舗画像">
+												<img th:if="${favorite.getShop().getImageName()}" th:src="${favorite.getShop().getImageName()}" class="card-img-top nagoyameshi-favorite-card-image" alt="店舗画像">
 												<img th:unless="${favorite.getShop().getImageName()}" th:src="@{/images/noImage.png}" class="card-img-top nagoyameshi-favorite-card-image" alt="NO IMAGE">
 											</div>
 											
