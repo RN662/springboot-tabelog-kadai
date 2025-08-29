@@ -34,7 +34,7 @@
 							</div>
 							
 							<div class="mb-3">
-								<img th:if="${shop.getImageName()}" th:src="@{/storage/__${shop.getImageName()}__}" class="w-100" alt="店舗画像">
+								<img th:if="${shop.getImageName()}" th:src="${shop.getImageName()}" class="w-100" alt="店舗画像">
 								<img th:unless="${shop.getImageName()}" th:src="@{/images/noImage.png}" class="w-100" alt="NO IMAGE">
 							</div>
 							
